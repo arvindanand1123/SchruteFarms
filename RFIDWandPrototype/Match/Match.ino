@@ -44,17 +44,22 @@ void loop() {
   }
 }
 
-bool isAnimal(String str){
+void isAnimal(String str){
   for(int i = 0; i < 4; i++){
     if(animals[i].getHex().equals(str)){
-      Serial.println(animals[i].getName());
+      //Serial.println(animals[i].getName());
+      byte uid[] = { 0, 0, 0, 0, 0, 0, 0 };  // Buffer to store the returned UID
+      byte uidLength;                        // Length of the UID (4 or 7 bytes depending on ISO14443A card type)
+      bool success = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength, 40);
+      String input = String(uid[0], HEX) + String(uid[1], HEX) + String(uid[2],HEX) + String(uid[3],HEX);
+      if(animals[i].getLoc().equals(input)){
+        Serial.println("Location Found for " + animals[i].getName());
+      }
+      
     }
   }
 }
 
-//bool isLocation(String str){
-//  
-//}
 
 
 bool SetupRFIDShield(void){
