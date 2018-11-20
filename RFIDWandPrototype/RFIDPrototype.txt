@@ -1,9 +1,0 @@
-zebra D7172B70
-zebra loc 66ACA230
-monkey D25DC356
-monkey loc 6691327E
-lion 283C856
-lion loc F6566F7E
-elephant 12DFC956
-elephant loc 461ADF7D
-
