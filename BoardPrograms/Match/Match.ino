@@ -19,6 +19,7 @@ SoftwareSerial LCD(10, 11);
 //global variables
 int counter = 0;
 bool isDone = false;
+
 //The buttons need to be plugged into digital input pins.
 //The leds need to be pluged into PMW pins.
 
@@ -78,16 +79,19 @@ void setup() {
 }
 
 void loop() {
+  //
   String input = readRFID();
-  if(input.equals("f6566f7e")){reset();} //If the RFID reads the reset tag, then the system resets.
-  //If reset isn't read, then it checks to see if an animal is present and if it's in the correct spot --> calls the function.
-  isAnimal(input);
-  //enables LED functionality
+  //If the RFID reads the reset tag, then the system resets
+  if(input.equals("f6566f7e")){reset();}
+  //If reset isn't read, then it checks to see if the students are "done" with placing the animals on the board --> enters LED mode
   if(isDone){playLED();}
+  //If reset isn't read, then it checks to see if an animal is present and if it's in the correct spot --> calls the function
+  if(input!="0000"){isAnimal(input);}
+  //enables LED functionality
 }
 
 //Contains LED code for all 3 buttons
-void playLED(void){
+void playLED(){
   greenState = digitalRead(greenButton);
   blueState = digitalRead(blueButton);
   redState = digitalRead(redButton);
@@ -119,7 +123,6 @@ void playLED(void){
       analogWrite(greenLED, green);
       currentGreen = green;
     }
-    
   }
 //blueButton Protocol
   if (blueState == LOW){
@@ -177,7 +180,7 @@ void playLED(void){
       analogWrite(redLED, red);
       currentRed = red;
     }
-  } 
+  }
 }
 
 //Checks if the RFID scanned is one of the animal hex values
@@ -253,7 +256,6 @@ void reset(){
   writeToLCD(("Counter set to " + String(counter)).c_str());
   delay(3000);
   systemReady();
-  delay(3000);
 }
 
 void writeToLCD(String str){
@@ -278,10 +280,6 @@ String readRFID(void){
   byte uidLength;                        // Length of the UID (4 or 7 bytes depending on ISO14443A card type)
   bool success = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength, 40);
   String input = String(uid[0], HEX) + String(uid[1], HEX) + String(uid[2],HEX) + String(uid[3],HEX);
-  while(!success){
-    success = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength, 40);
-    input = String(uid[0], HEX) + String(uid[1], HEX) + String(uid[2],HEX) + String(uid[3],HEX); 
-  }
   return input;
 }
 
